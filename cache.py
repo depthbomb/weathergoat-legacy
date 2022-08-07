@@ -17,7 +17,7 @@ class Cache:
         """Returns True if an item exists in the cache."""
         return path.exists(self.__get_item_path(identifier))
 
-    def add_item(self, identifier: str, value: dict):
+    def add_item(self, identifier: str, value: dict) -> None:
         """Adds an item to the cache."""
         if not self.has_item(identifier):
             try:
