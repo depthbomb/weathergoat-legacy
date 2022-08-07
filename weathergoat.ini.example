@@ -1,8 +1,8 @@
 [weather]
 ; comma-delimited zone IDs, see https://www.weather.gov/media/documentation/docs/NWS_Geolocation.pdf
 zones=HIC009,HIZ221
-; interval in minutes between checks
-check_interval=5
+; interval in seconds between checks
+check_interval=300
 
 [discord]
 webhook_url=https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxx/yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
