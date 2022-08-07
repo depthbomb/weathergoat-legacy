@@ -1,6 +1,5 @@
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 logger_formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
