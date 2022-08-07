@@ -1,3 +1,4 @@
+import re
 import random
 import string
 import requests
@@ -7,9 +8,9 @@ from logger import logger
 
 
 class Weather:
-    webhook_url = config["discord"]["webhook_url"]
-    image_url = config["discord"]["image"]
-    headers = {"user-agent": "weathergoat/0.1.0"}
+    webhook_url: str = config["discord"]["webhook_url"]
+    image_url: str = config["discord"]["image"]
+    headers: dict[str, str] = {"user-agent": "weathergoat"}
 
     def check_zone(self, zone: str) -> None:
         logger.info("Checking zone %s", zone)
@@ -28,11 +29,11 @@ class Weather:
         latest_alert = features[0]["properties"]
         alert_id = latest_alert["id"]
         alert_type = latest_alert["event"]
-        alert_areas = str(latest_alert["areaDesc"]).split("; ")
+        alert_areas = latest_alert["areaDesc"]
         alert_expires = latest_alert["expires"]
         alert_severity = latest_alert["severity"]
         alert_headline = latest_alert["headline"]
-        alert_description = latest_alert["description"]
+        alert_description = re.sub(r"(\\n\\n|\\n)", " ", latest_alert["description"])
 
         if str.startswith(alert_type, "Flood"):
             logger.info("Ignoring flood event")
@@ -43,16 +44,17 @@ class Weather:
             return
 
         self.send_webhook(
-            alert_areas,
-            alert_severity,
-            alert_headline,
-            alert_description,
-            alert_expires
+            areas=alert_areas,
+            severity=alert_severity,
+            headline=alert_headline,
+            description=alert_description,
+            expires=alert_expires
         )
         logger.info("Sent alert for %s", alert_id)
         cache.add_item(alert_id, json)
 
-    def get_severity_color(self, severity: str) -> int:
+    @staticmethod
+    def get_severity_color(severity: str) -> int:
         match severity:
             case 'Severe':
                 color = config["discord"]["color_severe"]
@@ -63,7 +65,7 @@ class Weather:
 
         return int(color)
 
-    def send_webhook(self, areas: list[str], severity: str, headline: str, description: str, expires: str) -> None:
+    def send_webhook(self, areas: str, severity: str, headline: str, description: str, expires: str) -> None:
         username = config["discord"]["username"]
         avatar = config["discord"]["avatar"]
         data = {
@@ -72,14 +74,14 @@ class Weather:
             "embeds": [{
                 "title": headline,
                 "color": self.get_severity_color(severity),
-                "description": description,
+                "description": f"```{description}```",
                 "image": {
-                    "url": self.get_radar_image()
+                    "url": self.__get_radar_image()
                 },
                 "fields": [
                     {
                         "name": "Affected Areas",
-                        "value": str.join(" - ", areas)
+                        "value": areas
                     },
                     {
                         "name": "Effective Until",
@@ -89,8 +91,9 @@ class Weather:
             }]
         }
         res = requests.post(self.webhook_url, headers=self.headers, json=data)
-        logger.info("Sent webhook") if res.ok else logger.error("Failed to send webhook: %d - %s - %s", res.status_code, res.reason, res.text)
+        logger.info("Sent webhook") if res.ok else logger.error("Failed to send webhook: %d - %s - %s", res.status_code,
+                                                                res.reason, res.text)
 
-    def get_radar_image(self) -> str:
+    def __get_radar_image(self) -> str:
         cache_buster = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
         return f"{self.image_url}?v={cache_buster}"

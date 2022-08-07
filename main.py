@@ -29,6 +29,5 @@ if __name__ == "__main__":
             logger.info("Stopping job")
             should_loop = False
             schedule.cancel_job(job)
-            pass
 
     exit(0)
