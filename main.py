@@ -16,7 +16,7 @@ def check_weather_alerts() -> None:
     [weather.check_zone(zone) for zone in zones]
 
 
-if __name__ == "__main__":
+def main() -> None:
     logger.info("Starting")
 
     interval: int = int(config["weather"]["check_interval"])
@@ -29,3 +29,7 @@ if __name__ == "__main__":
             should_loop = False
 
     exit(0)
+
+
+if __name__ == "__main__":
+    main()

@@ -50,7 +50,7 @@ class Weather:
             description=alert_description,
             expires=alert_expires
         )
-        logger.info("Sent alert for %s", alert_id)
+        logger.info(f"Sent {alert_id=}")
         cache.add_item(alert_id, json)
 
     @staticmethod
@@ -65,7 +65,7 @@ class Weather:
 
         return int(color)
 
-    def send_webhook(self, areas: str, severity: str, headline: str, description: str, expires: str) -> None:
+    def send_webhook(self, *, areas: str, severity: str, headline: str, description: str, expires: str) -> None:
         username = config["discord"]["username"]
         avatar = config["discord"]["avatar"]
         data = {
