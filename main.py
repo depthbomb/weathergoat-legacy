@@ -9,7 +9,7 @@ weather = Weather()
 
 def check_weather_alerts() -> None:
     zones = config["weather"]["zones"].split(",")
-    if len(zones) == 0:
+    if len(zones) == 0 or zones[0] == '':
         logger.fatal("No zones found in configuration")
         exit(1)
 
