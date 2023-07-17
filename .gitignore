@@ -1,2 +1,3 @@
+.idea/*
 __pycache__
-weathergoat.ini
+config.toml

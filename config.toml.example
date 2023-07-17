@@ -1,0 +1,16 @@
+[weathergoat]
+owner_id = 123
+
+[cleanup]
+channel_ids = [456, 789]
+
+[[alert_zones]]
+channel_id = 456  # Channel ID to report alerts to
+zone_id = "..."  # See https://www.weather.gov/media/documentation/docs/NWS_Geolocation.pdf - Example: MDC033
+radar_image = "https://radar.weather.gov/ridge/standard/..."  # Find radar images at https://radar.weather.gov/ridge/standard/
+
+[[forecast_zones]]
+channel_id = 789
+latitude = 12.34
+longitude = -56.78
+radar_image = "https://radar.weather.gov/ridge/standard/..."  # Find radar images at https://radar.weather.gov/ridge/standard/

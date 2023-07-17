@@ -1,0 +1,26 @@
+services:
+  cache:
+    image: redis:7.0.11-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    networks:
+      - local
+    entrypoint: redis-server --appendonly yes
+
+  app:
+    build: .
+    depends_on:
+      - cache
+    networks:
+      - local
+
+volumes:
+  cache:
+    driver: local
+
+networks:
+  local:
+    driver: bridge
