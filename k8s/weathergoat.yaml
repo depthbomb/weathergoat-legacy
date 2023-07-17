@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: weathergoat
+spec:
+  selector:
+    matchLabels:
+      app: weathergoat
+  serviceName: weathergoat
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 20Gi
+  template:
+    metadata:
+      labels:
+        app: weathergoat
+    spec:
+      imagePullSecrets:
+        - name: docker-registry-creds
+      containers:
+        - name: redis
+          args:
+            - --appendonly
+            - "yes"
+          image: redis:7.0.11-alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+        - name: weathergoat
+          image: docker.super.fish/weathergoat/weathergoat
+          imagePullPolicy: Always
+          env:
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: weathergoat
+                  key: discord_token
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /opt/weathergoat/config.toml
+              subPath: config.toml
+      volumes:
+        - name: config
+          secret:
+            secretName: weathergoat
