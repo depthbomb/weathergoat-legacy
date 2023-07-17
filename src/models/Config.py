@@ -34,7 +34,6 @@ class _CleanupConfiguration(BaseModel):
 
 
 class _WeatherGoatConfiguration(BaseModel):
-    token: str
     owner_id: int
 
 
