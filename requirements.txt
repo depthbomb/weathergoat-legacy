@@ -4,4 +4,5 @@ disnake[speed]==2.9.0
 humanize==4.7.0
 loguru==0.7.0
 pydantic==2.0.3
+pytz==2023.3
 redis[hiredis]==4.6.0

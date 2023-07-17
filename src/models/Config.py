@@ -16,6 +16,11 @@ class _ForecastZoneConfiguration(BaseModel):
         return v
 
 
+class _ForecastConfiguration(BaseModel):
+    schedule: str
+    timezone: str
+
+
 class _AlertZoneConfiguration(BaseModel):
     channel_id: int
     zone_id: str
@@ -30,6 +35,8 @@ class _AlertZoneConfiguration(BaseModel):
 
 
 class _CleanupConfiguration(BaseModel):
+    schedule: str
+    timezone: str
     channel_ids: list[int]
 
 
@@ -41,4 +48,5 @@ class Config(BaseModel):
     weathergoat: _WeatherGoatConfiguration
     cleanup: _CleanupConfiguration
     alert_zones: list[_AlertZoneConfiguration]
+    forecast: _ForecastConfiguration
     forecast_zones: list[_ForecastZoneConfiguration]

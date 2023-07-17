@@ -18,7 +18,7 @@ class AlertsCog(Cog):
 
         self.report_alert.start()
 
-    @loop(seconds=30.0)
+    @loop(seconds=30)
     async def report_alert(self):
         await self._check_alerts()
 

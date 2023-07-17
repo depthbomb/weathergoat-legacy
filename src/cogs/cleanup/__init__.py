@@ -1,3 +1,4 @@
+from pytz import timezone
 from aiocron import crontab
 from src.logger import logger
 from disnake.ext.commands import Cog
@@ -12,7 +13,9 @@ class CleanupCog(Cog):
         self._bot = bot
         self._channels = self._bot.config.cleanup.channel_ids
 
-        crontab("0 5 * * *", self.do_cleanup)
+        tz = timezone(self._bot.config.cleanup.timezone)
+
+        crontab(self._bot.config.cleanup.schedule, self.do_cleanup, tz=tz)
 
     async def do_cleanup(self):
         await self._bot.wait_until_ready()

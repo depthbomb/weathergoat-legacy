@@ -1,3 +1,4 @@
+from pytz import timezone
 from aiocron import crontab
 from functools import cache
 from datetime import datetime
@@ -15,7 +16,9 @@ class ForecastCog(Cog):
     def __init__(self, bot: WeatherGoat):
         self._bot = bot
 
-        crontab("0 8,13,19 * * *", self.report_forecast)
+        tz = timezone(self._bot.config.forecast.timezone)
+
+        crontab(self._bot.config.forecast.schedule, self.report_forecast, tz=tz)
 
     async def report_forecast(self):
         await self._bot.wait_until_ready()
