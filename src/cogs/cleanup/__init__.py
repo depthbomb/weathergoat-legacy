@@ -17,6 +17,8 @@ class CleanupCog(Cog):
 
     async def do_cleanup(self):
         await self._bot.wait_until_ready()
+        if len(self._channels) == 0:
+            return
 
         total_deleted_message = 0
         for id_ in self._channels:
