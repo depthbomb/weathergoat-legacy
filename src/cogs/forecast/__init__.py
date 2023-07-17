@@ -1,8 +1,7 @@
 from aiocron import crontab
 from functools import cache
-from src.logger import logger
-from src.config import config
 from datetime import datetime
+from src.logger import logger
 from disnake import Embed, Colour
 from disnake.ext.commands import Cog
 from src.weathergoat import WeatherGoat
@@ -21,7 +20,7 @@ class ForecastCog(Cog):
     async def report_forecast(self):
         await self._bot.wait_until_ready()
 
-        zones = config.forecast_zones
+        zones = self._bot.config.forecast_zones
         for zone in zones:
             channel = self._bot.get_channel(zone.channel_id)
             lat = zone.latitude

@@ -1,6 +1,7 @@
 from datetime import datetime
 from src.logger import logger
 from src.config import config
+from src.models import Config
 from aiohttp import ClientSession
 from humanize import naturaldelta
 from disnake.ext.tasks import loop
@@ -12,6 +13,7 @@ from disnake import Status, Intents, Activity, ActivityType
 class WeatherGoat(InteractionBot):
     _start: datetime = datetime.now()
 
+    config: Config
     httpclient: ClientSession
 
     def __init__(self):
@@ -19,6 +21,8 @@ class WeatherGoat(InteractionBot):
                 owner_id=config.weathergoat.owner_id,
                 intents=Intents(guilds=True, guild_messages=True, members=True)
         )
+
+        self.config = config
 
         self.httpclient = ClientSession()
         self.httpclient.headers.update({"user-agent": USER_AGENT})

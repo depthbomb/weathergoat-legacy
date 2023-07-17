@@ -1,6 +1,5 @@
 from aiocron import crontab
 from src.logger import logger
-from src.config import config
 from disnake.ext.commands import Cog
 from src.weathergoat import WeatherGoat
 
@@ -11,7 +10,7 @@ class CleanupCog(Cog):
 
     def __init__(self, bot: WeatherGoat):
         self._bot = bot
-        self._channels = config.cleanup.channel_ids
+        self._channels = self._bot.config.cleanup.channel_ids
 
         crontab("0 5 * * *", self.do_cleanup)
 

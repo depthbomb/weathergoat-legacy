@@ -2,7 +2,6 @@ from functools import cache
 from src.store import redis
 from datetime import datetime
 from src.logger import logger
-from src.config import config
 from disnake import Embed, Colour
 from disnake.ext.tasks import loop
 from disnake.ext.commands import Cog
@@ -31,7 +30,7 @@ class AlertsCog(Cog):
     async def _check_alerts(self) -> None:
         logger.debug("Checking alerts")
 
-        zones = config.alert_zones
+        zones = self._bot.config.alert_zones
         for zone in zones:
             channel_id = zone.channel_id
             zone_id = zone.zone_id
