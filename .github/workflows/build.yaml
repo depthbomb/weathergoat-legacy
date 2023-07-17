@@ -32,6 +32,6 @@ jobs:
           push: true
           tags: |
             docker.super.fish/weathergoat/weathergoat:${{ github.sha }}
-            docker.super.fish/weathergoat/weathergoat:latest"
+            docker.super.fish/weathergoat/weathergoat:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
