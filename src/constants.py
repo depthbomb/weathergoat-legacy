@@ -1,7 +1,7 @@
 from os import getenv
 from pathlib import Path
 
-DEBUG = getenv("DEBUG", True)
+DEBUG = getenv("DEBUG") is not None
 
 VERSION = (2, 0, 0)
 VERSION_STRING = [".".join(str(v)) for v in VERSION]
