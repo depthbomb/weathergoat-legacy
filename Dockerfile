@@ -4,7 +4,6 @@ WORKDIR /opt/weathergoat
 
 # Copy application files
 ADD main.py /opt/weathergoat
-ADD config.toml /opt/weathergoat
 ADD requirements.txt /opt/weathergoat
 COPY /bin /opt/weathergoat/bin
 COPY /src /opt/weathergoat/src
