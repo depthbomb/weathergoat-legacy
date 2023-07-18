@@ -17,7 +17,7 @@ schedule = "0 5 * * *"
 # The timezone to use alongside the aforementioned cron expression
 # See `all_timezones` in the `pytz` package
 timezone = "US/Eastern"
-# Channel IDs to delete messages in daily, normally set to the alert and forecast channels to keep them tidy
+# Channel IDs to delete messages in, normally set to the alert and forecast channels to keep them tidy
 # Note that the bot will delete *all* messages in these channels indiscriminately!
 # Set to an empty array (channel_ids = []) to disable cleanup
 channel_ids = [456, 789]
