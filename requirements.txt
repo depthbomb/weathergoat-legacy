@@ -1,5 +1,5 @@
 aiocron==1.8
-aiohttp[speedups]==3.8.4
+aiohttp[speedups]==3.8.5
 disnake[speed]==2.9.0
 humanize==4.7.0
 loguru==0.7.0
