@@ -1,6 +1,5 @@
 from pytz import timezone
 from aiocron import crontab
-from functools import cache
 from datetime import datetime
 from src.logger import logger
 from disnake import Embed, Colour
@@ -12,6 +11,7 @@ from src.models import PointGeoJSON, GridpointForecastGeoJSON
 
 class ForecastCog(Cog):
     _bot: WeatherGoat
+    _location_cache: dict[str, tuple[str, str]] = {}
 
     def __init__(self, bot: WeatherGoat):
         self._bot = bot
@@ -62,9 +62,11 @@ class ForecastCog(Cog):
 
                 logger.success("Successfully reported forecast for %s" % location)
 
-    @cache
     async def _get_coordinate_info(self, lat: float, lon: float) -> tuple[str, str]:
         key = f"{lat},{lon}"
+
+        if key in self._location_cache:
+            return self._location_cache[key]
 
         logger.debug("Retrieving info from coordinates %s" % key)
 
@@ -80,4 +82,6 @@ class ForecastCog(Cog):
             coordinates_location = f"{city}, {state}"
             forecast_url = data.properties.forecast
 
-            return coordinates_location, forecast_url
+            self._location_cache[key] = coordinates_location, forecast_url
+
+            return self._location_cache[key]
