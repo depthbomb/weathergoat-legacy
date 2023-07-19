@@ -2,10 +2,8 @@ from datetime import datetime
 from src.logger import logger
 from src.config import config
 from src.models import Config
-from aiohttp import ClientSession
 from humanize import naturaldelta
 from disnake.ext.tasks import loop
-from src.constants import USER_AGENT
 from disnake.ext.commands import InteractionBot
 from disnake import Status, Intents, Activity, ActivityType
 
@@ -14,7 +12,6 @@ class WeatherGoat(InteractionBot):
     _start: datetime = datetime.now()
 
     config: Config
-    httpclient: ClientSession
 
     def __init__(self):
         super().__init__(
@@ -23,9 +20,6 @@ class WeatherGoat(InteractionBot):
         )
 
         self.config = config
-
-        self.httpclient = ClientSession()
-        self.httpclient.headers.update({"user-agent": USER_AGENT})
 
         self._update_uptime_status.start()
 

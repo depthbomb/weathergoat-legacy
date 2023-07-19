@@ -4,6 +4,7 @@ from datetime import datetime
 from src.logger import logger
 from disnake import Embed, Colour
 from disnake.ext.tasks import loop
+from src.http import create_session
 from disnake.ext.commands import Cog
 from src.weathergoat import WeatherGoat
 from src.utils import append_cache_buster
@@ -42,50 +43,51 @@ class AlertsCog(Cog):
                 continue
 
             alert_endpoint = "https://api.weather.gov/alerts/active/zone/%s" % zone_id
-            async with self._bot.httpclient.get(alert_endpoint) as res:
-                if not res.ok:
-                    logger.error("Failed to check alerts for zone %s: %s" % (zone_id, res.reason))
-                    continue
-
-                try:
-                    res_data = await res.json()
-                    alert_collection = AlertCollectionGeoJSON(**res_data)
-                    features = alert_collection.features
-                    if len(features) == 0:
-                        logger.debug("No alerts for %s" % zone_id)
+            async with create_session() as sess:
+                async with sess.get(alert_endpoint) as res:
+                    if not res.ok:
+                        logger.error("Failed to check alerts for zone %s: %s" % (zone_id, res.reason))
                         continue
 
-                    feature = features[0]
-                    alert = feature.properties
-                    alert_id = alert.id
-                    if redis.exists(alert_id):
-                        logger.debug("Alert %s has already been reported" % alert_id)
-                        continue
+                    try:
+                        res_data = await res.json()
+                        alert_collection = AlertCollectionGeoJSON(**res_data)
+                        features = alert_collection.features
+                        if len(features) == 0:
+                            logger.debug("No alerts for %s" % zone_id)
+                            continue
 
-                    alert_expires = datetime.fromisoformat(alert.expires)
+                        feature = features[0]
+                        alert = feature.properties
+                        alert_id = alert.id
+                        if redis.exists(alert_id):
+                            logger.debug("Alert %s has already been reported" % alert_id)
+                            continue
 
-                    embed = Embed(
-                            title=alert.headline,
-                            description=f"```md\n{alert.description}```",
-                            timestamp=datetime.now(),
-                            color=self._get_severity_color(alert.severity)
-                    )
-                    embed.set_image(append_cache_buster(radar_image))
-                    embed.add_field("Certainty", alert.certainty, inline=True)
-                    embed.add_field("Effective Until", alert_expires.strftime("%c"), inline=True)
-                    embed.add_field("Affected Areas", alert.area_description, inline=False)
-                    embed.set_footer(text=alert.event)
+                        alert_expires = datetime.fromisoformat(alert.expires)
 
-                    if alert.instruction is not None:
-                        embed.add_field("Instructions", alert.instruction, inline=False)
+                        embed = Embed(
+                                title=alert.headline,
+                                description=f"```md\n{alert.description}```",
+                                timestamp=datetime.now(),
+                                color=self._get_severity_color(alert.severity)
+                        )
+                        embed.set_image(append_cache_buster(radar_image))
+                        embed.add_field("Certainty", alert.certainty, inline=True)
+                        embed.add_field("Effective Until", alert_expires.strftime("%c"), inline=True)
+                        embed.add_field("Affected Areas", alert.area_description, inline=False)
+                        embed.set_footer(text=alert.event)
 
-                    await channel.send(embed=embed)
+                        if alert.instruction is not None:
+                            embed.add_field("Instructions", alert.instruction, inline=False)
 
-                    redis.set(alert_id, "", ex=60*60*8)
+                        await channel.send(embed=embed)
 
-                    logger.success("Reported alert %s to channel %d" % (alert_id, channel_id))
-                except Exception as e:
-                    logger.exception("Failed to parse response", e)
+                        redis.set(alert_id, "", ex=60*60*8)
+
+                        logger.success("Reported alert %s to channel %d" % (alert_id, channel_id))
+                    except Exception as e:
+                        logger.exception("Failed to parse response", e)
 
     @cache
     def _get_severity_color(self, severity: str) -> Colour:
