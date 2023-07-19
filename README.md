@@ -11,6 +11,11 @@ Create a `config.toml` file in the root directory:
 # The user ID that owns this bot
 owner_id = 123
 
+[sentry]
+# DSN of your Sentry project to track errors
+# Leave as "" to disable
+dsn = ""
+
 [cleanup]
 # The cron expression that determines when to delete previously sent messages
 schedule = "0 5 * * *"

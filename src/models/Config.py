@@ -1,3 +1,4 @@
+from typing import Optional
 from src.utils import is_url_valid
 from pydantic import BaseModel, field_validator
 
@@ -40,12 +41,17 @@ class _CleanupConfiguration(BaseModel):
     channel_ids: list[int]
 
 
+class _SentryConfiguration(BaseModel):
+    dsn: Optional[str] = None
+
+
 class _WeatherGoatConfiguration(BaseModel):
     owner_id: int
 
 
 class Config(BaseModel):
     weathergoat: _WeatherGoatConfiguration
+    sentry: _SentryConfiguration
     cleanup: _CleanupConfiguration
     alert_zones: list[_AlertZoneConfiguration]
     forecast: _ForecastConfiguration
